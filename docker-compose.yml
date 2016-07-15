@@ -1,0 +1,36 @@
+# Jenkins（CI環境）
+# URL -> http://{IP}:8080/
+# ※IPはHostマシンのIP。他のURLも同様。
+jenkins:
+  build: ./containers/jenkins
+  environment:
+    JAVA_OPTS: "-Djava.awt.headless=true"
+  links:
+    - zap:zap
+  volumes:
+    - ./volumes/reports:/reports
+    - /var/jenkins_home
+  ports:
+    - "50000:50000"
+    - "8080:8080"
+  container_name: jenkins
+
+# OWASP ZAP（API診断環境）
+# URL -> http://{IP}:8090/
+zap:
+  build: ./containers/zap
+  command: zap.sh -daemon -port 8090 -config api.disablekey=true -host 0.0.0.0
+  ports:
+    - "8090:8090"
+  container_name: zap
+
+# Infobyte/Faraday（診断統合環境）
+# URL -> http://{IP}/reports/_design/reports/index.html
+faraday:
+  build: ./containers/faraday
+  command: /root/run_faraday.sh
+  volumes:
+    - ./volumes/reports:/root/.faraday/report/workspace/
+  ports:
+    - "80:5984"
+  container_name: faraday
