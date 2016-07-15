@@ -1,0 +1,50 @@
+1. 起動
+
+docker-compose up -d
+
+
+2. 各サービスへのアクセス方法
+-----------------------------------------------------
+▼Jenkins（CI環境）
+	http://{IP}:8080/
+
+▼Infobyte/Faraday（診断統合環境）
+	http://{IP}/reports/_design/reports/index.html
+
+▼OWASP ZAP（API診断環境）
+	http://{IP}:8090/
+-----------------------------------------------------
+
+
+3. [Jenkins] 新規ジョブを作成下記のシェルを登録
+	./jenkins_shell/jenkins-zap-ascan.sh
+
+
+4. [Jenkins] 3で登録したシェル内のスキャン設定を診断対象に変更
+#スキャン設定-----------------
+#診断対象URL
+scan_target="http://192.168.99.101/app/posts"
+#自動ログイン設定
+loginUrl="http://192.168.99.101/app/users/login"
+loginRequest="_method=POST&data[User][username]={%username%}&data[User][password]={%password%}"
+username="tobaru"
+password="1234"
+loggedInIndicatorRegex="\Qようこそ${username}さん\E"
+#logoutInIndicatorRegex="\Q\E"
+#ログイン認証方式
+authMethodName="formBasedAuthentication"
+#スキャン方式
+contextname="acrive-scan"
+#最大スレッド数
+max_children="10"
+#-----------------------------
+
+
+5. [Jenkins] ビルド実行
+	診断完了後、XMLレポートが生成される
+
+
+6. [Faraday] 診断レポート閲覧
+	
+
+
