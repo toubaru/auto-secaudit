@@ -65,7 +65,6 @@ $ docker-compose up -d
 | OWASP ZAP | http://{HOST_IP}:8090/                                           |
 | Faraday       | http://{HOST_IP}/reports/_design/reports/index.html |
 
-`./jenkins_shell/jenkins-zap-ascan.sh`
 
 ### Jenkins - ジョブの登録
 
