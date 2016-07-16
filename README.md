@@ -42,8 +42,7 @@ Windows 7 の場合で記載していきます
 
 - [Git](https://git-for-windows.github.io/) のインストール
 
-- フォルダの作成
-`C:\Users\{ユーザー名}\docker\`
+- フォルダの作成 `C:\Users\{ユーザー名}\docker\`
 
 ### 起動
 
@@ -71,12 +70,10 @@ $ docker-compose up -d
 ### Jenkins - ジョブの登録
 
 Jenkinsにアクセスします
-http://{HOST_IP}:8080/
 
 新規ジョブを作成し、下記のスクリプトを登録
-```
-./jenkins_shell/jenkins-zap-ascan.sh
-```
+
+`./jenkins_shell/jenkins-zap-ascan.sh`
 
 診断したい環境に合わせて、スクリプト内のスキャン設定を書き換えて下さい
 
@@ -115,18 +112,20 @@ max_children="10"
 ### Jenkins - ビルド実行
 
 自動診断完了後、XMLレポートが生成されます
+
 `./volumes/reports/`
 
 ###  Faraday - 診断レポート閲覧
 
 下記フォルダから自動的にFaradayに取り込まれます
+
 `./volumes/reports/`
 
 ※取り込み完了したファイルは下記フォルダに移動します
+
 `./volumes/reports/process/`
 
 取り込み完了後、レポートの画面にアクセスすることで診断結果が閲覧できます
-http://{HOST_IP}/reports/_design/reports/index.html
 
 ## 補足
 
