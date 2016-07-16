@@ -2,7 +2,7 @@
 
 ## 概要
 
-Docker Compose を使って下記の環境を作れるようにしてみました
+Docker Compose を使って下記のツールが連携できるようにしてみました
 
 - [Jenkins](https://hub.docker.com/_/jenkins/)
 - [OWASP ZAP](https://hub.docker.com/r/owasp/zap2docker-stable/)
@@ -10,12 +10,19 @@ Docker Compose を使って下記の環境を作れるようにしてみまし�
 
 ## 目的
 
-- Jenkins から OWASP ZAP のAPI 経由で自動診断
-- 脆弱性診断の結果を Faraday で確認
+デプロイのタイミングで脆弱性診断を行えるようにします
+
+想定している使い方は下記になります
+
+1. Jenkins から シェルの実行を行う
+2. OWASP ZAP のAPI 経由でサイトの脆弱性診断
+3. 脆弱性診断の結果を Faraday で確認
+4. 上記をひと通り試した後、デプロイに組み込む
+5. 自動診断環境の完成
 
 ## 注意
 
-許可を得たサイトのみ自動診断を実施して下さい
+許可を得たサイトのみ脆弱性診断を実施して下さい
 
 ## 環境
 
@@ -30,12 +37,13 @@ Windows 7 の場合で記載していきます
 
 ### 準備
 
-[DockerToolbox](https://www.docker.com/products/docker-toolbox) のインストール
+- [DockerToolbox](https://www.docker.com/products/docker-toolbox) のインストール
+（同梱されてるVirtualboxもインストール）
 
-フォルダの作成
-```
-C:\Users\{ユーザー名}\docker\
-```
+- [Git](https://git-for-windows.github.io/) のインストール
+
+- フォルダの作成
+`C:\Users\{ユーザー名}\docker\`
 
 ### 起動
 
@@ -58,15 +66,16 @@ $ docker-compose up -d
 | OWASP ZAP | http://{HOST_IP}:8090/                                           |
 | Faraday       | http://{HOST_IP}/reports/_design/reports/index.html |
 
-### Jenkins - 新規ジョブを作成し、下記のシェルを登録
-
 `./jenkins_shell/jenkins-zap-ascan.sh`
 
-### Jenkins - スクリプト内のスキャン設定を診断対象に変更
+### Jenkins - ジョブの登録
+
+新規ジョブを作成し、下記のスクリプトを登録
+```
+./jenkins_shell/jenkins-zap-ascan.sh
+```
 
 診断したい環境に合わせて、スクリプト内のスキャン設定を書き換えて下さい
-
-`./jenkins_shell/jenkins-zap-ascan.sh`
 
 ```bash
 #スキャン設定-----------------
