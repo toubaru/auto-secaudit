@@ -70,6 +70,9 @@ $ docker-compose up -d
 
 ### Jenkins - ジョブの登録
 
+Jenkinsにアクセスします
+http://{HOST_IP}:8080/
+
 新規ジョブを作成し、下記のスクリプトを登録
 ```
 ./jenkins_shell/jenkins-zap-ascan.sh
@@ -112,13 +115,19 @@ max_children="10"
 ### Jenkins - ビルド実行
 
 自動診断完了後、XMLレポートが生成されます
+`./volumes/reports/`
 
 ###  Faraday - 診断レポート閲覧
 
-自動的にFaradayに取り込まれます
+下記フォルダから自動的にFaradayに取り込まれます
+`./volumes/reports/`
 
-レポートの画面にアクセスすることで診断結果が閲覧できます
+※取り込み完了したファイルは下記フォルダに移動します
+`./volumes/reports/process/`
+
+取り込み完了後、レポートの画面にアクセスすることで診断結果が閲覧できます
+http://{HOST_IP}/reports/_design/reports/index.html
 
 ## 補足
 
-- [OWASP ZAP GUI版](https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project) を使ってると理解が早いと思います
+- [OWASP ZAP](https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project) を GUI で使うと、スクリプト内で何をやっているかが分かりやすいと思います
