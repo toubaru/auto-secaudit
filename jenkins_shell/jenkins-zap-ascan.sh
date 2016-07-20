@@ -2,11 +2,11 @@
 
 #スキャン設定-----------------
 #診断対象URL
-scan_target="http://192.168.99.101/app/posts"
+scan_target="http://192.168.99.100:10080/weak-app/posts"
 #自動ログイン設定
-loginUrl="http://192.168.99.101/app/users/login"
+loginUrl="http://192.168.99.100:10080/weak-app/users/login"
 loginRequest="_method=POST&data[User][username]={%username%}&data[User][password]={%password%}"
-username="tobaru"
+username="toubaru"
 password="1234"
 loggedInIndicatorRegex="\Qようこそ${username}さん\E"
 #logoutInIndicatorRegex="\Q\E"

@@ -10,15 +10,7 @@ Docker Compose を使って下記のツールが連携できるようにして�
 
 ## 目的
 
-デプロイのタイミングで脆弱性診断を行えるようにします
-
-想定している使い方は下記になります
-
-1. Jenkins から シェルの実行を行う
-2. OWASP ZAP のAPI 経由でサイトの脆弱性診断
-3. 脆弱性診断の結果を Faraday で確認
-4. 上記をひと通り試した後、デプロイに組み込む
-5. 自動診断環境の完成
+Jenkinsでデプロイ成功後に、自動で脆弱性診断を行える環境を作ります
 
 ## 注意
 
@@ -33,7 +25,14 @@ Docker Compose を使って下記のツールが連携できるようにして�
 
 ## 使い方
 
-Windows 7 の場合で記載していきます
+大まかな流れは下記になります
+
+1. Git Hub から最新のソースを取得し、デプロイする
+2. 1が成功した場合、自動診断のシェルの実行を行う
+3. OWASP ZAP のAPI 経由でサイトの脆弱性診断
+4. 脆弱性診断の結果を Faraday で確認
+
+※Windows 7 の場合で記載していきます
 
 ### 準備
 
@@ -59,31 +58,36 @@ $ docker-compose up -d
 
 ### 各サービスへのアクセス方法
 
-| サービス       | URL                                                                         |
-|:--------------|:-------------------------------------------------------------|
-| Jenkins        | http://{HOST_IP}:8080/                                           |
-| OWASP ZAP | http://{HOST_IP}:8090/                                           |
-| Faraday       | http://{HOST_IP}/reports/_design/reports/index.html |
+| サービス       | URL                                                                         | 備考                            |
+|:--------------|:-------------------------------------------------------------|:--------------------------|
+| Jenkins        | http://{HOST_IP}:8080/                                           | アクセスする際、Administrator Password が<br/>求められたら下記コマンドで入手して下さい<br/>`$ docker logs jenkins` |
+| OWASP ZAP | http://{HOST_IP}:8090/                                           |  |
+| Faraday       | http://{HOST_IP}/reports/_design/reports/index.html |  |
+| デモサイト    | http://{HOST_IP}:10080/weak-app/posts/                 | [ソース](https://github.com/toubaru/weak-app) |
+
+### Jenkins - ジョブの登録（デプロイ用）
+
+新規ジョブ「weak-app」を作成し、ビルド時に下記スクリプトを実行するように登録
+
+`./jenkins_shell/build-weak-app.sh`
 
 
-### Jenkins - ジョブの登録
+### Jenkins - ジョブの登録(診断用)
 
-Jenkinsにアクセスします
-
-新規ジョブを作成し、下記のスクリプトを登録
+新規ジョブ「weak-app-auto-secaudit」を作成し、ビルド時に下記スクリプトを実行するように登録
 
 `./jenkins_shell/jenkins-zap-ascan.sh`
 
-診断したい環境に合わせて、スクリプト内のスキャン設定を書き換えて下さい
+※診断したい環境に合わせて、スクリプト内のスキャン設定を書き換えて下さい
 
 ```bash
 #スキャン設定-----------------
 #診断対象URL
-scan_target="http://192.168.99.101/app/posts"
+scan_target="http://192.168.99.100:10080/app/posts"
 #自動ログイン設定
-loginUrl="http://192.168.99.101/app/users/login"
+loginUrl="http://192.168.99.100:10080/app/users/login"
 loginRequest="_method=POST&data[User][username]={%username%}&data[User][password]={%password%}"
-username="tobaru"
+username="toubaru"
 password="1234"
 loggedInIndicatorRegex="\Qようこそ${username}さん\E"
 #logoutInIndicatorRegex="\Q\E"
@@ -108,10 +112,23 @@ max_children="10"
 | 6 | loggedInIndicatorRegex | ログイン状態を示す文字列を記載<br/>これで、ZAPがログインしているかどうかを判断できます。<br/>例）"ようこそ○○さん" 等|
 | 7 | logoutInIndicatorRegex | ログアウト状態を示す文字列を記載<br/>※#6 か #7 の変数どちらかを有効にする |
 
+### Jenkins - ジョブの更新（デプロイ用）
+
+「weak-app」にて、デプロイ成功後に「weak-app-auto-secaudit」のビルドを実行するように修正します
+
+- ビルド後の処理の追加　→　他のプロジェクトのビルド
+- 「weak-app-auto-secaudit」を指定
+- 「安定している場合のみ起動」を指定
+- 保存
+
 ### Jenkins - ビルド実行
 
-自動診断完了後、XMLレポートが生成されます
+「weak-app」をビルド実行
 
+- Git Hub からソースを取得、デモサイトにソースが反映されます
+- 正常終了後、「weak-app-auto-secaudit」のビルドが実行されます
+- OWASP ZAP API 経由で自動診断が実行されます
+- 自動診断完了後、XMLレポートが生成されます
 `./volumes/reports/`
 
 ###  Faraday - 診断レポート閲覧
@@ -120,7 +137,7 @@ max_children="10"
 
 `./volumes/reports/`
 
-※取り込み完了したファイルは下記フォルダに移動します
+Faraday に取り込み完了後は下記フォルダに移動されます
 
 `./volumes/reports/process/`
 

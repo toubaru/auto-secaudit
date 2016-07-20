@@ -34,3 +34,14 @@ faraday:
   ports:
     - "80:5984"
   container_name: faraday
+
+# Demo Site
+# URL -> http://{IP}:10080/weak-app/posts/
+demo:
+  build: ./containers/demo
+  volumes:
+    - ./volumes/demo_app_src/:/app/
+  ports:
+    - "10080:80"
+  container_name: demo
+
