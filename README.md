@@ -65,17 +65,20 @@ $ docker-compose up -d
 | Faraday       | http://{HOST_IP}/reports/_design/reports/index.html |  |
 | デモサイト    | http://{HOST_IP}:10080/weak-app/posts/                 | [ソース](https://github.com/toubaru/weak-app) |
 
-### Jenkins - ジョブの登録（デプロイ用）
+### Jenkins - ジョブの登録（デモサイトにデプロイするジョブ）
 
-新規ジョブ「weak-app」を作成し、ビルド時に下記スクリプトを実行するように登録
+新規ジョブ「weak-app」を作成し、ビルド時にシェルを実行するように登録
 
+下記ファイルの中身をコピペします。
 `./jenkins_shell/build-weak-app.sh`
 
+※GitHubからソース落としてきてデモサイトに反映しているだけです
 
-### Jenkins - ジョブの登録(診断用)
+### Jenkins - ジョブの登録(ZAPのAPIを叩いて自動診断するジョブ)
 
-新規ジョブ「weak-app-auto-secaudit」を作成し、ビルド時に下記スクリプトを実行するように登録
+新規ジョブ「weak-app-auto-secaudit」を作成し、ビルド時にシェルを実行するように登録
 
+下記ファイルの中身をコピペします。
 `./jenkins_shell/jenkins-zap-ascan.sh`
 
 ※診断したい環境に合わせて、スクリプト内のスキャン設定を書き換えて下さい
@@ -102,7 +105,7 @@ max_children="10"
 
 変更箇所
 
-| # | 変数 | 意味  |
+| #   | 変数         | 意味  |
 | :-- |:-----------|:------------|
 | 1 | scan_target   | 診断対象のURL |
 | 2 | loginUrl         | ログイン処理のURL |
@@ -112,7 +115,7 @@ max_children="10"
 | 6 | loggedInIndicatorRegex | ログイン状態を示す文字列を記載<br/>これで、ZAPがログインしているかどうかを判断できます。<br/>例）"ようこそ○○さん" 等|
 | 7 | logoutInIndicatorRegex | ログアウト状態を示す文字列を記載<br/>※#6 か #7 の変数どちらかを有効にする |
 
-### Jenkins - ジョブの更新（デプロイ用）
+### Jenkins - ジョブの更新（デモサイトにデプロイするジョブ）
 
 「weak-app」にて、デプロイ成功後に「weak-app-auto-secaudit」のビルドを実行するように修正します
 
